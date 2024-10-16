@@ -11,7 +11,7 @@ library(lme4)
 library(lmerTest)
 
 # we work with the following database that you made on monday
-# browseURL("https://docs.google.com/spreadsheets/d/1gAhwMWjA6aD3SMHb0j9X_4xYaxsDBNre6B5XyWDgzzI/edit?usp=sharing")
+ browseURL("https://docs.google.com/spreadsheets/d/1gAhwMWjA6aD3SMHb0j9X_4xYaxsDBNre6B5XyWDgzzI/edit?usp=sharing")
 
 # read the data tables from the database
 MetTables<- read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2zhCjdrR-4sMpcfvyXunOBdLXKI2VYBnTa8u2Xs-yCTQmLYhE54bl7g9a2-9zRxvgqmCe0RXDuW1X/pub?gid=894288297&single=true&output=csv')
@@ -46,8 +46,8 @@ p2 <-AllData |>
        title="Clay layer")
 p2
 p3<- AllData |>
-  group_by(Type,DomPlantName) |>
-  summarize(Count=n()) |>
+  dplyr::group_by(Type,DomPlantName) |>
+  dplyr::summarize(Count=n()) |>
   ggplot(aes(x=Type,y=Count, fill=DomPlantName)) +
   geom_bar(stat="identity") +
   labs(x="Inside or outside depression",
@@ -56,8 +56,8 @@ p3<- AllData |>
        fill="Species")
 p3
 p4<- AllData |>
-  group_by(Type,AnnualPerenn) |>
-  summarize(Count=n()) |>
+  dplyr::group_by(Type,AnnualPerenn) |>
+  dplyr::summarize(Count=n()) |>
   ggplot(aes(x=Type,y=Count, fill=AnnualPerenn)) +
   geom_bar(stat="identity") +
   labs(x="Inside or outside depression",
@@ -78,6 +78,9 @@ model <- lmerTest::lmer(ClayThick ~ Type + (1 | Point), data = AllData)
 summary(model)
 
 # test if the bare soil cover is different
-
+model2 <- lmerTest::lmer(BareCov ~ Type + (1 | Point), data = AllData)
+summary(model2)
 # test if the species community composition is different with a permanova
-
+AllData |>
+  dplyr::group_by(Type,Group_ID) |> 
+  dplyr::summarize(Count=n())
