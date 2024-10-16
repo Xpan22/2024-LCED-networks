@@ -21,7 +21,7 @@ cheddar::PlotWebByLevel(TL84,
                         
 # who is species 38?
 TL84$nodes[38,]
-
+TL84$nodes[56,]
 cheddar::PlotWebByLevel(TL84,
                         show.nodes.as="both", 
                         cex=3, # symbol size
