@@ -46,3 +46,4 @@ cheddar::PlotWebByLevel(Benguela,
                         show.nodes.as="both",
                         node.labels="node",
                         link.lwd=Benguela$trophic.links$diet.fraction/5)
+
