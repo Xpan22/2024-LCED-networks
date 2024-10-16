@@ -1,5 +1,5 @@
 #### analysis of the saltmarsh data we collected on monday with the LCED course
-#### This is the script of Xiabin from LCED 2024.
+#### This is the script of Xiabin from LCED 2024
 # clear everything in the R environment
 rm(list = ls())
 renv::restore()  # restore the library
