@@ -5,7 +5,7 @@
 # Scale-dependent feedback and regular spatial patterns in young mussel 
 # beds. American Naturalist 165(3): E66-E77.
 
-remove(list=ls())     # Remove all variables from memory
+rm(list=ls())     # Remove all variables from memory
 require("fields")     # Loading a package for the visualization of the model
 
 # --- Parameters values of the model ------------------------------------------
@@ -37,7 +37,7 @@ dx      =  Length/m   # The size of a grid cell in X direction
 dy      =  Length/m   # The size of a grid cell in Y direction
 
 dT      =  0.0002     # timestep (per hour)
-EndTime =  360*24/Phi # end time (days x hours)
+EndTime =  3600*24/Phi # end time (days x hours)
 NoFrames=  360        # Number of frames displayed during the entire simulation
 
 frac    =  0.05       # Initial settings: fraction of area filled with mussels
@@ -66,7 +66,7 @@ OpenWindow <- function(width, height,...)
 A = M = dA = dM = matrix(nrow=m,ncol=m)    # The state and rate variables
 
 # --- advective (Gradient) and diffusive (Laplacian) operators ----------------
-
+TimeRec = MusselRec = d_M_Rec = vector(length=NoFrames)  
 # The gradient operator
 d_dy = function (w) { # fluxes in y-direction, backwards difference scheme
   # Flux = (middle cell - left side cell) / cell size in y dimension
@@ -89,6 +89,7 @@ set.seed(20)  # Making sure the random number generator gives the same values
 
 # Initial values for the algae and the musels
 A[,]=0.5 
+TimeRec=MusselRec=vector(length=NoFrames);
 M=100+(matrix(ncol=m,nrow=m,data=runif(m*m))<=frac)*10 
 
 # Some counters used in the loop below
@@ -103,8 +104,9 @@ par(mfrow=c(1,2), mar=c(3, 4, 2, 6) + 0.1) # sets up the margins
 
 # --- The simulation loop -----------------------------------------------------
 
+jj = 0;
 while (Time<=EndTime){   # Here the time loop starts   
-   
+  d_M = 0.02 + Time/EndTime*(0.02)
   # Calculating local input, uptake, growth, mortality, and fluxes
   drA = (Aup - A)*f - c/h*A*M - V*d_dy(A)
   drM = e*c*A*M - d_M*k_M/(M + k_M)*M + D*d2_dxy2(M)       
@@ -135,12 +137,23 @@ while (Time<=EndTime){   # Here the time loop starts
        dev.hold()  # Put all updating on hold  
 
        ii=0    # Resetting the plot counter
-
+       jj=jj+1 # Increasing the Recorder counter
+       
+       TimeRec[jj] = Time*Phi/24 # The time in days
+       MusselRec[jj] = mean(M)
       } 
 
   Time=Time+dT  # Incrementing time with one
   ii=ii+1       # Incrementing the plot counter with one
- 
+  d_M_Rec[jj] = d_M 
 } # Here the time loop ends
 
+print(paste("Mean biomass :", mean(M)))
 
+Consumption = c/h*A*M
+Mortality = d_M*k_M/(M + k_M)*M
+print(paste("Mean biomass :", mean(M)))
+print(paste("Consumption :", mean(Consumption)/mean(M)))
+print(paste("Mortality :", mean(Mortality)/mean(M)))
+
+plot(d_M_Rec, MusselRec, ylim=c(0,500))
